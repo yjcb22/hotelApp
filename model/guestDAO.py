@@ -20,6 +20,7 @@ class GuestDAO:
         #SQL STATEMENTS        
         self.SQL_SELECT = "SELECT * FROM guest"
         self.SQL_SELECT_ONE = "SELECT id, name, lastname, room FROM guest WHERE id=?"
+        self.SQL_SELECT_PASSWORD = "SELECT id_guest, name, lastname, age, email, password FROM Guests WHERE email=%s AND password=%s"
 
 
 ##DICTIONARY##
@@ -69,6 +70,17 @@ class GuestDAO:
         for i in result:
             guestDto = GuestDTO(i[1], i[2], i[3], i[0])
             guests.append(guestDto)  
+        return guests
+    
+    def validateCredentials(self, guest: GuestDTO) -> list[GuestDTO]:
+        guests = []
+        cur = self.db.cx.cursor()
+        cur.execute(self.SQL_SELECT_PASSWORD,(guest.email, guest.password))
+        result = cur.fetchall()
+        #print("result ",result)
+        for i in result:
+            guestDto = GuestDTO(i[1], i[2], i[3], i[4], i[5], i[0])
+            guests.append(guestDto)              
         return guests
     
     
