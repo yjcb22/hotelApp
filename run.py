@@ -39,4 +39,3 @@ controller = LoginCtl(view, cx)
 #     view.mainWindow.protocol("WM_DELETE_WINDOW", on_closing)
 
 view.mainloop()
-
