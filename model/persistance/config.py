@@ -1,5 +1,5 @@
 ##MySQL##
-USERNAME = "skydb"
-PASSWORD = "Sky!5w1tch"
+USERNAME = "root"
+PASSWORD = "password"
 HOST = "mysql8"
 DATABASE = "hotel"
