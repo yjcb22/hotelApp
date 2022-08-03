@@ -1,5 +1,5 @@
 ##MySQL##
-USERNAME = "root"
+USERNAME = "username"
 PASSWORD = "password"
-HOST = "mysql8"
-DATABASE = "hotel"
+HOST = "ip"
+DATABASE = "db"
