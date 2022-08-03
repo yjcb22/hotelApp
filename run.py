@@ -4,6 +4,7 @@
 ##
 
 from controller.LoginCtl import LoginCtl
+from model.guestDAO import GuestDAO
 from model.persistance.DB_Dic import DB_Dict
 from model.persistance.DB_Mysql import DB_Mysql
 from model.persistance.DB_SqlLite import DB_Sqlite
@@ -25,8 +26,10 @@ from view.Guests import Guests
 #cx = DB_Dict()
 # cx = DB_Sqlite("hotelApp.db")
 cx = DB_Mysql(HOST, USERNAME, PASSWORD, DATABASE)
+##Create DB object with existing connection
+guestDao = GuestDAO(cx)
 view = Login()
-controller = LoginCtl(view, cx)
+controller = LoginCtl(view, guestDao)
 # view = Checkin()
 #controller = CheckCtl(view, cx)
 
