@@ -1,6 +1,3 @@
-import email
-
-
 class GuestDTO:
     
     def __init__(self, name = "", lastname="", age=0, email="", password="", id = 0) -> None:
