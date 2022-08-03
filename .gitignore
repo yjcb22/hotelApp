@@ -160,5 +160,5 @@ cython_debug/
 #.idea/
 
 ##Custom
-model/persistance/config.py
+/model/persistance/config.py
 *pyc

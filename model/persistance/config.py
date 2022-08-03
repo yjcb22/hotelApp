@@ -1,5 +1,5 @@
 ##MySQL##
-USERNAME = "test"
-PASSWORD = "test"
-HOST = "test"
-DATABASE = "test"
+USERNAME = "test4"
+PASSWORD = "test4"
+HOST = "test4"
+DATABASE = "test4"
