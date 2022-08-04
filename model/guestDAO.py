@@ -1,3 +1,4 @@
+from model.GlobalviewDTO import GlobalviewDTO
 from model.guestDTO import GuestDTO
 from model.persistance.DB_Dic import DB_Dict
 from model.persistance.DB_Mysql import DB_Mysql
@@ -18,9 +19,10 @@ class GuestDAO:
         
         
         #SQL STATEMENTS        
-        self.SQL_SELECT = "SELECT * FROM guest"
-        self.SQL_SELECT_ONE = "SELECT id, name, lastname, room FROM guest WHERE id=?"
+        self.SQL_SELECT = "SELECT * FROM Guests"
+        self.SQL_SELECT_ONE = "SELECT id, name, lastname, room FROM Guests WHERE id=?"
         self.SQL_SELECT_PASSWORD = "SELECT id_guest, name, lastname, age, email, password FROM Guests WHERE email=%s AND password=%s"
+        self.SQL_SELECT_GLOBALVIEW = "SELECT Reservations.id_reservation, Guests.name, Guests.lastname, Guests.age, Guests.email, Reservations.id_room FROM hotel.Guests INNER JOIN hotel.Reservations ON hotel.Guests.id_guest = hotel.Reservations.id_guest"
 
 
 ##DICTIONARY##
@@ -83,6 +85,14 @@ class GuestDAO:
             guests.append(guestDto)              
         return guests
     
+    def selectGuestReserv(self) -> list[GlobalviewDTO]:
+        guestReserve = []
+        cur = self.db.cx.cursor()
+        cur.execute(self.SQL_SELECT_GLOBALVIEW)
+        result = cur.fetchall()
+        for i in result:
+            guestReserve.append(GlobalviewDTO(i[1],i[2],i[4],i[0],i[3],i[5]))
+        return guestReserve
     
 ##DELETE
 
