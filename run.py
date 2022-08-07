@@ -26,10 +26,8 @@ from view.Guests import Guests
 #cx = DB_Dict()
 # cx = DB_Sqlite("hotelApp.db")
 cx = DB_Mysql(HOST, USERNAME, PASSWORD, DATABASE)
-##Create DB object with existing connection
-guestDao = GuestDAO(cx)
 view = Login()
-controller = LoginCtl(view, guestDao)
+controller = LoginCtl(view, cx)
 # view = Checkin()
 #controller = CheckCtl(view, cx)
 

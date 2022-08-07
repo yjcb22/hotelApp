@@ -10,12 +10,14 @@ class Login(tk.Tk):
         self.usernameLabel.grid(row=0, column=0)
         
         self.usernameTextField = tk.Entry(self, width=20)
+        self.usernameTextField.insert(0,"email1@test1.com")
         self.usernameTextField.grid(row=0, column=1)
         
         self.passwordLabel = tk.Label(self, text="Password", font="none 20 bold")
         self.passwordLabel.grid(row=1, column=0)
         
         self.passwordTextField = tk.Entry(self, width=20)
+        self.passwordTextField.insert(0,"password1")
         self.passwordTextField.grid(row=1, column=1)
         
         self.hintLabel = tk.Label(self, text="Hint:", font="none 20 bold", foreground='red')

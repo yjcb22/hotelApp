@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-class GlobalView():
-    def __init__(self, master = None) -> None:
+class GlobalView(tk.Tk):
+    def __init__(self, master = None) -> None:        
         self.mainWindow = tk.Toplevel(master)
         self.mainWindow.title("Hotel check-in APP: Global")
         
