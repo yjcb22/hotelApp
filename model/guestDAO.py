@@ -1,3 +1,4 @@
+from model.CategoryDTO import CategoryDTO
 from model.GlobalviewDTO import GlobalviewDTO
 from model.guestDTO import GuestDTO
 from model.persistance.DB_Dic import DB_Dict
@@ -23,6 +24,12 @@ class GuestDAO:
         self.SQL_SELECT_ONE = "SELECT id, name, lastname, room FROM Guests WHERE id=?"
         self.SQL_SELECT_PASSWORD = "SELECT id_guest, name, lastname, age, email, password FROM Guests WHERE email=%s AND password=%s"
         self.SQL_SELECT_GLOBALVIEW = "SELECT Reservations.id_reservation, Guests.name, Guests.lastname, Guests.age, Guests.email, Reservations.id_room FROM hotel.Guests INNER JOIN hotel.Reservations ON hotel.Guests.id_guest = hotel.Reservations.id_guest"
+        self.SQL_SELECT_CATEGORY = "SELECT id_category, name, description, active from Categories"
+
+        self.SQL_INSERT_CATEGORY = "INSERT INTO Categories (name, description) VALUES (%s, %s)"
+        self.SQL_DELETE_SOFT = "UPDATE Categories SET active=false WHERE id_category=%s"
+
+
 
 
 ##DICTIONARY##
@@ -58,12 +65,9 @@ class GuestDAO:
 
 #####################SQL##########################
 
-    def insertSQL(self, guest: GuestDTO) -> None:  
-        cur = self.db.cx.cursor()
-        cur.execute(self.SQL_INSERT, (guest.name, guest.lastname, guest.room))
-        self.db.cx.commit()
-        #self.db.cx.close()        
-
+#############
+###SELECT####
+############
     def selectAllSQL(self) -> list[GuestDTO]:
         guests = []
         cur = self.db.cx.cursor()
@@ -93,7 +97,21 @@ class GuestDAO:
         for i in result:
             guestReserve.append(GlobalviewDTO(i[1],i[2],i[4],i[0],i[3],i[5]))
         return guestReserve
+
+
+
+###############    
+##INSERT###
+##############
+
+    def insertSQL(self, guest: GuestDTO) -> None:  
+        cur = self.db.cx.cursor()
+        cur.execute(self.SQL_INSERT, (guest.name, guest.lastname, guest.room))
+        self.db.cx.commit()
+        #self.db.cx.close()   
+
     
 ##DELETE
+
 
 ##UPDATE
