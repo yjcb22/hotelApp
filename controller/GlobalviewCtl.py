@@ -1,9 +1,10 @@
-from model.CategoryDAO import CategoryDAO
 from model.GlobalviewDTO import GlobalviewDTO
 from model.guestDAO import GuestDAO
 from controller.CategoryCtl import CategoryCtl
+from controller.RoomCtl import RoomCtl
 from view.Categories import Categories
 from view.GlobalView import GlobalView
+from view.Rooms import Rooms
 
 
 class GlobalviewCtl:
@@ -19,6 +20,7 @@ class GlobalviewCtl:
 
         #Button actions
         self.view.categoryBtn.config(command=self.openCategory)
+        self.view.roomsBtn.config(command=self.openRoom)
         
 
     def getAllGuestsRev(self) -> None:        
@@ -38,3 +40,8 @@ class GlobalviewCtl:
         #get the original CX from Dao object
         cx = self.guestDao.db          
         CategoryCtl(Categories(), cx)
+
+    def openRoom(self)-> None: 
+        #get the original CX from Dao object
+        cx = self.guestDao.db          
+        RoomCtl(Rooms(), cx)
