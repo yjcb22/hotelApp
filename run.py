@@ -1,6 +1,6 @@
 ####MVC###
-##https://www.giacomodebidda.com/posts/mvc-pattern-in-python-introduction-and-basicmodel/
-##https://www.pythontutorial.net/tkinter/tkinter-mvc/   
+# https://www.giacomodebidda.com/posts/mvc-pattern-in-python-introduction-and-basicmodel/
+# https://www.pythontutorial.net/tkinter/tkinter-mvc/
 ##
 
 from controller.LoginCtl import LoginCtl
@@ -31,7 +31,7 @@ controller = LoginCtl(view, cx)
 # view = Checkin()
 #controller = CheckCtl(view, cx)
 
-#Close the DB connection on "window close"
+# Close the DB connection on "window close"
 # def on_closing():
 #     print("closing the window")
 #     cx.close()
