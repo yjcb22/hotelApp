@@ -2,7 +2,18 @@ import tkinter as tk
 from tkinter import ttk
 
 class GlobalView(tk.Tk):
-    def __init__(self, master = None) -> None:        
+    """Globalview class shown after login with TKinter
+
+    :param tk: TK superclass
+    :type tk: TK
+    """
+    def __init__(self, master = None) -> None:  
+        """Constructor
+
+        :param master: main TK windows, defaults to None
+        :type master: TK, optional
+        """
+         
         self.mainWindow = tk.Toplevel(master)
         self.mainWindow.title("Hotel check-in APP: Global")
         

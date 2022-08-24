@@ -5,21 +5,29 @@ from model.persistance.DB_Dic import DB_Dict
 from model.persistance.DB_Mysql import DB_Mysql
 from model.persistance.DB_SqlLite import DB_Sqlite
 
+
 class GuestDAO:
+    """Class to access the DB for any query related to guests
+    """
+
     def __init__(self, db) -> None:
+        """Constructor
+
+        :param db: raw DB connection
+        :type db: DB_Mysql class
+        """
         if isinstance(db, DB_Dict):
             self.db = db.database
             self.counter = 0
         elif isinstance(db, DB_Sqlite):
-            #SQL STATEMENTS
+            # SQL STATEMENTS
             self.SQL_INSERT = "INSERT INTO guest (name, lastname, room) VALUES(?, ?, ?)"
             self.db = db
-        elif isinstance(db, DB_Mysql): 
+        elif isinstance(db, DB_Mysql):
             self.SQL_INSERT = "INSERT INTO guest (name, lastname, room) VALUES(%s, %s, %s)"
             self.db = db
-        
-        
-        #SQL STATEMENTS        
+
+        # SQL STATEMENTS
         self.SQL_SELECT = "SELECT * FROM Guests"
         self.SQL_SELECT_ONE = "SELECT id, name, lastname, room FROM Guests WHERE id=?"
         self.SQL_SELECT_PASSWORD = "SELECT id_guest, name, lastname, age, email, password FROM Guests WHERE email=%s AND password=%s"
@@ -30,88 +38,103 @@ class GuestDAO:
         self.SQL_DELETE_SOFT = "UPDATE Categories SET active=false WHERE id_category=%s"
 
 
-
-
 ##DICTIONARY##
-    def insert(self, guest: GuestDTO) -> None:        
-        self.db[self.counter] = {'id': self.counter, 
-        'name': guest.name,
-        'lastname': guest.lastname,
-        'room': guest.room
-        }
+
+    def insert(self, guest: GuestDTO) -> None:
+        self.db[self.counter] = {'id': self.counter,
+                                 'name': guest.name,
+                                 'lastname': guest.lastname,
+                                 'room': guest.room
+                                 }
         self.counter += 1
-        
-    
-    
+
     def selectAll(self) -> list[GuestDTO]:
         guests = []
         for key in self.db:
-            guestDto = GuestDTO(self.db[key]['name'],self.db[key]['lastname'],self.db[key]['room'],self.db[key]['id'])
+            guestDto = GuestDTO(self.db[key]['name'], self.db[key]
+                                ['lastname'], self.db[key]['room'], self.db[key]['id'])
             guests.append(guestDto)
-            #print(guestDto.toString())
+            # print(guestDto.toString())
         return guests
-    
-   
 
-
-    def selectById(self, id: int) -> GuestDTO:        
-        guestDto = GuestDTO(self.db[id]['name'],self.db[id]['lastname'],self.db[id]['room'])
+    def selectById(self, id: int) -> GuestDTO:
+        guestDto = GuestDTO(
+            self.db[id]['name'], self.db[id]['lastname'], self.db[id]['room'])
         return guestDto
 
+    # DELETE
 
-    ##DELETE
-
-    ##UPDATE
+    # UPDATE
 
 #####################SQL##########################
 
 #############
 ###SELECT####
 ############
+
     def selectAllSQL(self) -> list[GuestDTO]:
+        """SELECT all the guests from the table
+
+        :return: List of DTO objects from the result in the DB
+        :rtype: list[GuestDTO]
+        """
         guests = []
         cur = self.db.cx.cursor()
         cur.execute(self.SQL_SELECT)
         result = cur.fetchall()
         for i in result:
             guestDto = GuestDTO(i[1], i[2], i[3], i[0])
-            guests.append(guestDto)  
+            guests.append(guestDto)
         return guests
-    
+
     def validateCredentials(self, guest: GuestDTO) -> list[GuestDTO]:
+        """SELECT used to allow login to the application
+
+        :param guest: DTO with the guest to validate
+        :type guest: GuestDTO
+        :return: List of matching users
+        :rtype: list[GuestDTO]
+        """
         guests = []
         cur = self.db.cx.cursor()
-        cur.execute(self.SQL_SELECT_PASSWORD,(guest.email, guest.password))
+        cur.execute(self.SQL_SELECT_PASSWORD, (guest.email, guest.password))
         result = cur.fetchall()
         #print("result ",result)
         for i in result:
             guestDto = GuestDTO(i[1], i[2], i[3], i[4], i[5], i[0])
-            guests.append(guestDto)              
+            guests.append(guestDto)
         return guests
-    
+
     def selectGuestReserv(self) -> list[GlobalviewDTO]:
+        """SELECT to bring a summary of the guest with reservations on the glovalview
+        uppon login
+
+        :return: List of DTO objects to show in the GlobalView GUI
+        :rtype: list[GlobalviewDTO]
+        """
         guestReserve = []
         cur = self.db.cx.cursor()
         cur.execute(self.SQL_SELECT_GLOBALVIEW)
         result = cur.fetchall()
         for i in result:
-            guestReserve.append(GlobalviewDTO(i[1],i[2],i[4],i[0],i[3],i[5]))
+            guestReserve.append(GlobalviewDTO(
+                i[1], i[2], i[4], i[0], i[3], i[5]))
         return guestReserve
 
 
-
-###############    
+###############
 ##INSERT###
 ##############
 
-    def insertSQL(self, guest: GuestDTO) -> None:  
+
+    def insertSQL(self, guest: GuestDTO) -> None:
         cur = self.db.cx.cursor()
         cur.execute(self.SQL_INSERT, (guest.name, guest.lastname, guest.room))
         self.db.cx.commit()
-        #self.db.cx.close()   
-
-    
-##DELETE
+        # self.db.cx.close()
 
 
-##UPDATE
+# DELETE
+
+
+# UPDATE
