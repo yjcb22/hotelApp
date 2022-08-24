@@ -1,0 +1,160 @@
+---
+- name: Setup DB instance
+  gather_facts: false
+  hosts: db
+  become: true
+  vars:
+    mysql_pass_root: test
+    mysql_pass_skydb: test
+    mysql_user: skydb
+
+  tasks:
+    - name: Copy DB files
+      copy:
+        src: "{{ item['src'] }}"
+        dest: "{{ item['dest'] }}"
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - src: ../db/hotel.sql
+          dest: /root/hotel.sql
+
+    - name: "apt update"
+      apt:
+        update_cache: yes
+
+    - name: "Ensure NTP is installed"
+      apt:
+        name: ntp
+        state: present
+
+    - name: "Ensure NTP is running and enabled"
+      service:
+        name: ntp
+        state: started
+        enabled: true
+
+    - name: Install Mysql
+      apt:
+        name: "{{ item }}"
+      with_items:
+        - mysql-server
+        - python3-mysqldb
+
+    - name: Start enable Mysql
+      service:
+        name: mysql
+        state: started
+        enabled: true
+
+    - name: Store the password and enable mysql to listen
+      shell: |
+        echo "[client]
+        user=root
+        password={{ mysql_pass_root }}" > /root/.my.cnf
+        sed -i "s/^bind-address.*$/bind-address            = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
+      args:
+        creates: /root/.my.cnf
+      register: is_set_pass
+      notify: restart mysql
+
+    - name: Set root password
+      mysql_user:
+        login_host: "localhost"
+        login_user: "root"
+        login_password: ""
+        name: "root"
+        password: "{{ mysql_pass_root }}"
+        state: present
+      when: is_set_pass.changed
+
+    - name: Initialize db
+      mysql_db:
+        state: import
+        name: all
+        target: /root/hotel.sql
+      when: is_set_pass.changed
+
+    - name: Create skydb user
+      mysql_user:
+        state: present
+        name: "{{ mysql_user }}"
+        password: "{{ mysql_pass_skydb }}"
+        host: "%"
+        priv:
+          'hotel.*': 'ALL,GRANT'
+      when: is_set_pass.changed
+
+    - meta: flush_handlers
+    - debug:
+        var: is_set_pass
+
+  handlers:
+    - name: restart mysql
+      service:
+        name: mysql
+        state: restarted
+
+- name: Setup APP instance
+  gather_facts: false 
+  hosts: app
+  become: true
+  vars:
+    python_repo: ppa:deadsnakes/ppa
+    pip_url: https://bootstrap.pypa.io/get-pip.py
+  tasks:    
+    - name: Create directory for app
+      file:
+        path: /home/vagrant/app
+        state: directory
+        mode: 0755
+      register: is_set_directory
+
+    - name: Copy source code
+      synchronize:
+        recursive: yes
+        src: "{{playbook_dir}}/.."
+        dest: /home/vagrant/app
+
+    - name: Add repository for python310
+      apt_repository:
+        repo: "{{ python_repo }}"
+        state: present
+        update_cache: true
+        validate_certs: false
+
+    - name: Install Python310 and xauth
+      apt:
+        name: "{{ item }}"
+      with_items:
+        - python3.10
+        - python3.10-tk
+        - xauth
+
+    - name: Install PIP310
+      shell: |
+        curl -sS {{ pip_url }} | python3.10
+      when: is_set_directory.changed
+
+    - name: "Install PIP dependencies"
+      pip:
+        name: "{{ item }}"
+        executable: pip3
+      with_items:
+        - mysql-connector-python
+        - tkcalendar
+    - name: Set SSH X-11 forward
+      shell: |
+        grep "^X11UseLocalhost" /etc/ssh/sshd_config || echo "X11UseLocalhost no" >> /etc/ssh/sshd_config
+        echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD6f20rgrgE6juN7jHww877vAmh5VzOOJ2onUJNDGydYGHWpWsKDDESAPhqU8MJDoHfk4zblV0sh0aZC2Y5tQMYYPewkbmEVFCXFk4GwFUwqGl7SCYfdT7x0xUDwoqymCSToSfqbWljqQku33KUgEKBuaKvMx7R8lTNIUtmZvVgiztZJGjfy3lpBIIAc2VKP9qkO4+GqgAKv09zoz299JiKlf3mUZH0bK2suLSHWQsjyzHo8LtwB9yWyzW6sV8ITX0m8AXb1DBDDSh28I0mfBwNroRUiQDZ4uodJo92Q4ymWs07v1KBx5lCPPw9aE1KKgrnEglhvrRSUSf6hYPej7bw+wSbF46lv352zGOazFNKVkjGyJ0LsamTSt/hFjAO6Whl+c8iAQz4jkscKGWyXsG+VgWTZ/IUQwjkDMuw8jSQXAqiBxdq5QSWkqAP2BEAFAedE9JezkZdYott1+tui7YiVpi17dipB+uI8XOGjbuz+hHIOFi9yfh1y3ZAsgKzq2ciTQor3WlqkX1/eJ4V7L4QQyjtmBn9HYuml7ymrYx+03BDAZGbpGtMkzNFcVMS8hckvWWa7JiVdGoQhflm2YWkApEB8Gp6M7p0Z/sZ4BQUQTA2yoCupR/qtO5eBlMzKj9zVMCQwXWE1yNd1dnz+WfBTpSKrbTlCtm+5MCbTvjLhQ== yeison@ceo.cengtel.com" >> /home/vagrant/.ssh/authorized_keys
+      when: is_set_directory.changed
+      notify: restart ssh
+
+    - meta: flush_handlers
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: ssh
+        state: restarted

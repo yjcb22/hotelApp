@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "geerlingguy/ubuntu2004"
+
+  config.ssh.insert_key = false
+  
+  config.vm.synced_folder ".", "/valgrant", disabled: true
+
+  config.vm.provider :virtualbox do |v|
+    v.memory = 512
+    v.cpus = 4
+    v.linked_clone = true
+  end
+
+  #App server 1
+  config.vm.define "app" do |app|
+    app.vm.hostname = "app.test"
+    app.vm.network :private_network, ip: "192.168.60.4"
+  end
+
+  #DB Server
+  config.vm.define "db" do |db|
+    db.vm.hostname = "db.test"
+    db.vm.network :private_network, ip: "192.168.60.5"
+  end
+
+  # config.vm.provision "ansible" do |ansible|
+  #   ansible.playbook = "playbook.yml"
+  # end
+
+end
