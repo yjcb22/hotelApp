@@ -28,13 +28,8 @@ class RoomDTO:
         self.category = category
         self.active = active
 
-    def toString(self) -> str:
-        """Show the object as a String
-
-        :return: String with the object information
-        :rtype: str
-        """
-        return "RoomDTO{" + "id=" + str(self.id) + ", address=" + str(self.address) + \
-            ", description=" + self.description + ", size=" + str(self.size) + \
-            ", name=" + self.name + ", category=" + str(self.category) + \
-            ", active=" + str(self.active) + '}'
+    def __repr__(self):
+        return f"{self.__class__.__name__}(id={str(self.id)}, address={str(self.address)}, " \
+            f"description={self.description}, size={str(self.size)}, " \
+            f"name={self.name}, category={str(self.category)}, " \
+            f"active={str(self.active)})"

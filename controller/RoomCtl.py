@@ -22,96 +22,107 @@ class RoomCtl:
         self.cx = cx
 
         # Create DB object with existing connection
-        self.roomDao = RoomDAO(cx)
+        self.room_dao = RoomDAO(cx)
         # Needed to bring the list of categories for the dropdownmenu
-        self.catDao = CategoryDAO(cx)
-        self.getAllRooms()
+        self.cat_dao = CategoryDAO(cx)
+        self.get_all_rooms()
 
         # Button actions
-        self.view.addBtn.config(command=self.add)
-        self.view.updateBtn.config(command=self.update)
-        self.view.deleteBtn.config(command=self.delete)
+        self.view.add_btn.config(command=self.add)
+        self.view.update_btn.config(command=self.update)
+        self.view.delete_btn.config(command=self.delete)
 
         # Click Actions
-        self.view.treeTable.bind("<ButtonRelease-1>", self.onOneClick)
+        self.view.tree_table.bind("<ButtonRelease-1>", self.on_one_click)
 
-    def getAllRooms(self) -> None:
+    def get_all_rooms(self) -> None:
         """SELECT all the rooms from database and print them on the TreeTable
         """
-        rooms = self.roomDao.selectAllRooms()
-        self.setOptions()
-        self.refreshTreeTable(rooms)
+        rooms = self.room_dao.select_all_rooms()
+        self.set_options()
+        self.refresh_tree_table(rooms)
 
     def add(self) -> None:
-        name = self.view.addrTextField.get()
-        desc = self.view.addrTextField.get()
-        self.roomDao.insertCategory(CategoryDTO(name, desc))
-        self.getAllRooms()
-        self.clearAll()
+
+        addr = self.view.addr_text_field.get()
+        desc = self.view.desc_text_field.get()
+        size = self.view.size_text_field.get()
+        name = self.view.name_text_field.get()
+        # Combobox
+        cat = self.view.cat_dropdown.get()
+        # database index starts in 1 not in 0
+        index_cat = self.view.options.index(cat) + 1
+
+        active = self.view.act_text_field.get()
+
+        self.room_dao.insert_room(
+            RoomDTO(addr, desc, size, name, index_cat, 0, active))
+        self.get_all_rooms()
+        self.clear_all()
 
     def update(self) -> None:
         """UPDATE entry in the DB from the information modified on the GUI
         """
-        id = self.view.idTextField.get()
-        addr = self.view.addrTextField.get()
-        desc = self.view.descTextField.get()
-        size = self.view.sizeTextField.get()
-        name = self.view.nameTextField.get()
+        id = self.view.id_text_field.get()
+        addr = self.view.addr_text_field.get()
+        desc = self.view.desc_text_field.get()
+        size = self.view.size_text_field.get()
+        name = self.view.name_text_field.get()
         # Combobox
-        cat = self.view.catDropdown.get()
+        cat = self.view.cat_dropdown.get()
         # database index starts in 1 not in 0
-        indexCat = self.view.options.index(cat) + 1
+        index_cat = self.view.options.index(cat) + 1
 
-        active = self.view.actTextField.get()
-        self.roomDao.updateRoom(
-            RoomDTO(addr, desc, size, name, indexCat, id, active))
+        active = self.view.act_text_field.get()
+        self.room_dao.update_room(
+            RoomDTO(addr, desc, size, name, index_cat, id, active))
 
-        self.getAllRooms()
-        self.clearAll()
+        self.get_all_rooms()
+        self.clear_all()
 
     def delete(self) -> None:
-        roomId = self.view.idTextField.get()
-        self.roomDao.deleteRoom(roomId)
-        self.getAllRooms()
-        self.clearAll()
+        room_id = self.view.id_text_field.get()
+        self.room_dao.delete_room(room_id)
+        self.get_all_rooms()
+        self.clear_all()
 
     ###HELPER FUNCTIONS#
 
-    def refreshTreeTable(self, data: list[RoomDTO]) -> None:
+    def refresh_tree_table(self, data: list[RoomDTO]) -> None:
         """Refresh (clear and repaint) information on TreeTable
 
         Args:
             data (list[RoomDTO]): List (Array) of DTOs obtained from the DB
         """
         # clean Table
-        for i in self.view.treeTable.get_children():
-            self.view.treeTable.delete(i)
+        for i in self.view.tree_table.get_children():
+            self.view.tree_table.delete(i)
         # from List to TreeTable
         for i in range(len(data)):
-            self.view.treeTable.insert(parent='', index="end", iid=data[i].id, text=data[i].id,
-                                       values=(data[i].address, data[i].description, data[i].size,
-                                               data[i].name, data[i].category, data[i].active))
+            self.view.tree_table.insert(parent='', index="end", iid=data[i].id, text=data[i].id,
+                                        values=(data[i].address, data[i].description, data[i].size,
+                                                data[i].name, data[i].category, data[i].active))
             #print(i, data[i].toString())
 
-    def onOneClick(self, e) -> None:
+    def on_one_click(self, e) -> None:
         """Once an element from the TreeTable is clicked the function will populate the information
         on the text field an dropdown-menu
 
         Args:
             e (object): Needed for the Treetable function binding
         """
-        room = self.getRoomDto()
-        self.setText(room.id, self.view.idTextField)
-        self.setText(room.address, self.view.addrTextField)
-        self.setText(room.description, self.view.descTextField)
-        self.setText(room.size, self.view.sizeTextField)
-        self.setText(room.name, self.view.nameTextField)
+        room = self.get_room_dto()
+        self.set_text(room.id, self.view.id_text_field)
+        self.set_text(room.address, self.view.addr_text_field)
+        self.set_text(room.description, self.view.desc_text_field)
+        self.set_text(room.size, self.view.size_text_field)
+        self.set_text(room.name, self.view.name_text_field)
         # Set value of combobox
         index = self.view.options.index(room.category)
-        self.view.catDropdown.current(index)
-        self.setText(room.active, self.view.actTextField)
+        self.view.cat_dropdown.current(index)
+        self.set_text(room.active, self.view.act_text_field)
 
-    def setText(self, text: str, e) -> None:
+    def set_text(self, text: str, e) -> None:
         """Set text for Tkinter elements
 
         Args:
@@ -122,32 +133,32 @@ class RoomCtl:
         st.set(text)
         e.config(textvariable=st)
 
-    def setOptions(self) -> None:
+    def set_options(self) -> None:
         """Generate and set the items for the Combobox (dropdown-menu)
         """
-        categories = self.catDao.selectAllCategories()
+        categories = self.cat_dao.selectAllCategories()
         names = [i.name for i in categories]  # List comprehension
         self.view.options = names
-        self.view.catDropdown.config(values=self.view.options)
-        self.view.catDropdown.current(0)
+        self.view.cat_dropdown.config(values=self.view.options)
+        self.view.cat_dropdown.current(0)
 
-    def getRoomDto(self) -> RoomDTO:
+    def get_room_dto(self) -> RoomDTO:
         """Generate DTO object from clicked element on a Tkinter TreeTable
 
         Returns:
             RoomDTO: Generated DTO from elements on selected Treetable row
         """
-        selected = self.view.treeTable.focus()
-        values = self.view.treeTable.item(selected, 'values')
+        selected = self.view.tree_table.focus()
+        values = self.view.tree_table.item(selected, 'values')
         return (RoomDTO(values[0], values[1], values[2], values[3], values[4], selected, values[5]))
 
-    def clearAll(self) -> None:
+    def clear_all(self) -> None:
         """Set elements to default values after an action (insert, update, delete) has been performed.
         """
-        self.setText("", self.view.idTextField)
-        self.setText("", self.view.addrTextField)
-        self.setText("", self.view.descTextField)
-        self.setText("", self.view.sizeTextField)
-        self.setText("", self.view.nameTextField)
-        self.view.catDropdown.current(0)
-        self.setText("", self.view.actTextField)
+        self.set_text("", self.view.id_text_field)
+        self.set_text("", self.view.addr_text_field)
+        self.set_text("", self.view.desc_text_field)
+        self.set_text("", self.view.size_text_field)
+        self.set_text("", self.view.name_text_field)
+        self.view.cat_dropdown.current(0)
+        self.set_text("", self.view.act_text_field)
