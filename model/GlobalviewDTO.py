@@ -25,10 +25,7 @@ class GlobalviewDTO:
         self.email = email
         self.room = room
 
-    def toString(self) -> str:
-        """Show the object as a String
-
-        :return: String with the object information
-        :rtype: str
-        """
-        return "GlobalviewDTO{" + "id=" + str(self.id) + ", name=" + self.name + ", lastname=" + self.lastname + ", age=" + str(self.age) + ", email=" + self.email + ", room=" + str(self.room) + '}'
+    def __repr__(self):
+        return f"{self.__class__.__name__}(id={str(self.id)}, " \
+            f"name={self.name}, lastname={str(self.lastname)}, " \
+            f"age={str(self.age)}), email={str(self.email)}, room={str(self.room)})"

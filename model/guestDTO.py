@@ -2,7 +2,7 @@ class GuestDTO:
     """Data Transfer Object to transfer data between DB and APP
     """
 
-    def __init__(self, name="", lastname="", age=0, email="", password="", id=0) -> None:
+    def __init__(self, name="", lastname="", age=0, email="", password="", id=0, active=1) -> None:
         """Constructor
 
         :param name: guest name, defaults to ""
@@ -17,6 +17,8 @@ class GuestDTO:
         :type password: str, optional
         :param id: guest id, defaults to 0
         :type id: int, optional
+        :param active: enable or disabled entry (1 true 0 false)
+        :type active: int, optional
         """
         self.id = id
         self.name = name
@@ -24,11 +26,10 @@ class GuestDTO:
         self.age = age
         self.email = email
         self.password = password
+        self.active = active
 
-    def toString(self) -> str:
-        """Show the object as a String
-
-        :return: String with the object information
-        :rtype: str
-        """
-        return "GuestDTO{" + "id=" + str(self.id) + ", name=" + self.name + ", lastname=" + self.lastname + ", age=" + str(self.age) + ", email=" + self.email + ", password=" + self.password + '}'
+    def __repr__(self):
+        return f"{self.__class__.__name__}(id={str(self.id)}, " \
+            f"name={str(self.name)}, lastname={str(self.lastname)}, " \
+            f"age={str(self.age)}, email={str(self.email)}, " \
+            f"password={str(self.password)}, active={str(self.active)})"
