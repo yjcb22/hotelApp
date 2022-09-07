@@ -4,27 +4,17 @@
 ##
 
 from controller.LoginCtl import LoginCtl
-from model.guestDAO import GuestDAO
 from model.persistance.DB_Dic import DB_Dict
 from model.persistance.DB_Mysql import DB_Mysql
 from model.persistance.DB_SqlLite import DB_Sqlite
+#Read the Mysql connection information to use it in the connection class
 from model.persistance.config import *
-from view.Categories import Categories
-from view.Checkin import Checkin
-from controller.CheckCtl import CheckCtl
-from view.GlobalView import GlobalView
 from view.Login import Login
-from view.Reservations import Reservations
-from view.Rooms import Rooms
-from view.Guests import Guests
 
-
-##TESTING#
-
-#view = Reservations()
 
 #cx = DB_Dict()
 # cx = DB_Sqlite("hotelApp.db")
+#Create a DB connnection to Mysql
 cx = DB_Mysql(HOST, USERNAME, PASSWORD, DATABASE)
 view = Login()
 controller = LoginCtl(view, cx)

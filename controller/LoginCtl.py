@@ -21,26 +21,27 @@ class LoginCtl:
         self.cx = cx
 
         # Create DB object with existing connection
-        self.guestDao = GuestDAO(self.cx)
+        self.guest_dao = GuestDAO(self.cx)
 
-        self.view.loginBtn.config(command=self.getLogin)
-        self.view.loginBtn.bind("<Return>", self.getLogin)
+        self.view.login_btn.config(command=self.get_login)
+        self.view.login_btn.bind("<Return>", self.get_login)
 
-    def getLogin(self, e=None) -> None:
-        """Obtain values from GUI and compare with the database
+    def get_login(self, e=None) -> None:
+        """Obtain vlaues from GUI and compare with the database
 
-        :param e: Needed for the function binding, defaults to None
-        :type e: element clicked, optional
+        :param e: Needed for th function binding, defaults to None
+        :type e: object, optional
         """
-        username = self.view.usernameTextField.get()
-        password = self.view.passwordTextField.get()
+
+        username = self.view.username_text_field.get()
+        password = self.view.password_text_field.get()
         guest = GuestDTO("", "", "", username, password)
         answer = self.login(guest)
         if answer:
-            GlobalviewCtl(GlobalView(self.view), self.guestDao)
+            GlobalviewCtl(GlobalView(self.view), self.guest_dao)
             # self.view.withdraw()
         else:
-            self.view.hintLabel.config(text="Hint: Wrong info!")
+            self.view.hint_label.config(text="Hint: Wrong info!")
 
     def login(self, guest: GuestDTO) -> list[GuestDTO]:
         """Check agains the database
@@ -50,4 +51,4 @@ class LoginCtl:
         :return: boolean with information from DB.
         :rtype: list[GuestDTO]
         """
-        return self.guestDao.validateCredentials(guest)
+        return self.guest_dao.validate_credentials(guest)

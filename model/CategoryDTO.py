@@ -19,10 +19,6 @@ class CategoryDTO:
         self.description = description
         self.active = active
 
-    def toString(self) -> str:
-        """Show the object as a String
-
-        :return: String with the object information
-        :rtype: str
-        """
-        return "CategoryDTO{" + "id=" + str(self.id) + ", name=" + self.name + ", description=" + self.description + ", active=" + self.active + '}'
+    def __repr__(self):
+        return f"{self.__class__.__name__}(id={str(self.id)}, name={self.name}, " \
+            f"description={self.description}, active={str(self.active)})"

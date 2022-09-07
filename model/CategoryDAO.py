@@ -2,7 +2,7 @@ from model.CategoryDTO import CategoryDTO
 
 
 class CategoryDAO:
-    """Class to access the DB for any query related to rooms
+    """Class to access the DB for any query related to Categories
     """
 
     def __init__(self, db) -> None:
@@ -25,7 +25,7 @@ class CategoryDAO:
 ###SELECT####
 
 
-    def selectAllCategories(self) -> list[CategoryDTO]:
+    def select_all_categories(self) -> list[CategoryDTO]:
         """SELECT all the categories from the table
 
         :return: List of DTO objects from result in the DB
@@ -43,7 +43,7 @@ class CategoryDAO:
 ##INSERT###
 
 
-    def insertCategory(self, category: CategoryDTO) -> None:
+    def insert_category(self, category: CategoryDTO) -> None:
         """INSERT  new category in the DB
 
         :param category: DTO object to insert
@@ -55,7 +55,7 @@ class CategoryDAO:
         self.db.cx.commit()
 
 # DELETE
-    def deleteCategory(self, id: int) -> None:
+    def delete_category(self, id: int) -> None:
         """SOFT DELETE. It will just enable or disable the entry
 
         :param id: Category ID
@@ -66,7 +66,7 @@ class CategoryDAO:
         self.db.cx.commit()
 
 # UPDATE
-    def updateCategory(self, category: CategoryDTO) -> None:
+    def update_category(self, category: CategoryDTO) -> None:
         """UPDATE entry on the DB
 
         :param category: DTO object with the information to update

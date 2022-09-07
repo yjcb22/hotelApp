@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class DB_Sqlite:
     def __init__(self, path: str) -> None:
         self.cx = sqlite3.connect(path)

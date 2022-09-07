@@ -7,6 +7,7 @@ from view.Categories import Categories
 class CategoryCtl:
     """Controller for the Categories
     """
+
     def __init__(self, view: Categories, cx) -> None:
         """Constructor
 
@@ -18,85 +19,93 @@ class CategoryCtl:
         self.view = view
         self.cx = cx
 
-        ##Create DB object with existing connection
-        self.categoryDao = CategoryDAO(cx)
-        self.getAllCategories()
+        # Create DB object with existing connection
+        self.category_dao = CategoryDAO(cx)
+        self.get_all_categories()
 
+        # Button actions
+        self.view.add_btn.config(command=self.add)
+        self.view.update_btn.config(command=self.update)
+        self.view.delete_btn.config(command=self.delete)
 
-        #Button actions
-        self.view.addBtn.config(command=self.add)
-        self.view.updateBtn.config(command=self.update)
-        self.view.deleteBtn.config(command=self.delete)
+        # Click Actions on table
+        self.view.tree_table.bind("<ButtonRelease-1>", self.on_one_click)
 
-        #Click Actions
-        self.view.treeTable.bind("<ButtonRelease-1>", self.onOneClick)
-    
-    
-    def getCategoryDto(self) -> CategoryDTO:
-        selected = self.view.treeTable.focus()
-        values = self.view.treeTable.item(selected, 'values')
-        return(CategoryDTO(values[0],values[1], selected, values[2]))
-         
+    def get_category_dto(self) -> CategoryDTO:
+        """It will return a category DTO from a click on the table
 
-    def getAllCategories(self) -> None:
-        categories = self.categoryDao.selectAllCategories()
-        self.refreshTreeTable(categories)       
-        
-        
-    def add(self)-> None:
-        name = self.view.nameTextField.get()
-        desc = self.view.descTextField.get()
-        self.categoryDao.insertCategory(CategoryDTO(name, desc))  
-        self.getAllCategories()
-        self.clearAll()
-        
+        :return: Category dto created from the information in the table
+        :rtype: CategoryDTO
+        """
+        selected = self.view.tree_table.focus()
+        values = self.view.tree_table.item(selected, 'values')
+        return (CategoryDTO(values[0], values[1], selected, values[2]))
 
-    def update(self)-> None:  
-        id = self.view.idTextField.get()
-        name = self.view.nameTextField.get()
-        desc = self.view.descTextField.get()
-        active = self.view.activeTextField.get()
-        self.categoryDao.updateCategory(CategoryDTO(name,desc,id,active))
-        self.getAllCategories()
-        self.clearAll()
+    def get_all_categories(self) -> None:
+        """Bring al the categories found in the database
+        """
+        categories = self.category_dao.select_all_categories()
+        self.refresh_tree_table(categories)
 
-    def delete(self)-> None:  
-        catId = self.view.idTextField.get()
-        self.categoryDao.deleteCategory(catId)
-        self.getAllCategories()
-        self.clearAll()
+    def add(self) -> None:
+        """Create a new category in the database
+        """
+        name = self.view.name_text_field.get()
+        desc = self.view.desc_text_field.get()
+        self.category_dao.insert_category(CategoryDTO(name, desc))
+        self.get_all_categories()
+        self.clear_all()
 
+    def update(self) -> None:
+        """Update an existing entry in the database
+        """
+        id = self.view.id_text_field.get()
+        name = self.view.name_text_field.get()
+        desc = self.view.desc_text_field.get()
+        active = self.view.active_text_field.get()
+        self.category_dao.update_category(CategoryDTO(name, desc, id, active))
+        self.get_all_categories()
+        self.clear_all()
+
+    def delete(self) -> None:
+        """Soft delete an existing category in the db
+        """
+        catId = self.view.id_text_field.get()
+        self.category_dao.delete_category(catId)
+        self.get_all_categories()
+        self.clear_all()
 
     ###HELPER FUNCTIONS#
-    def refreshTreeTable(self, data: list[CategoryDTO]) -> None:
+
+    def refresh_tree_table(self, data: list[CategoryDTO]) -> None:
         """Refresh (clear and repaint) information on TreeTable
 
         :param data: List of DTOs obtained from the DB
         :type data: list[CategoryDTO]
         """
-        ##clean Table
-        for i in self.view.treeTable.get_children():
-            self.view.treeTable.delete(i)
-        ##from database to table
+        # clean Table
+        for i in self.view.tree_table.get_children():
+            self.view.tree_table.delete(i)
+        # from database to table
         for i in range(len(data)):
-            self.view.treeTable.insert(parent='', index="end", iid=data[i].id, text=data[i].id, values=(data[i].name, data[i].description, data[i].active))
+            self.view.tree_table.insert(parent='', index="end", iid=data[i].id, text=data[i].id, values=(
+                data[i].name, data[i].description, data[i].active))
             #print(i, data[i].toString())
 
-
-    def onOneClick(self, e) -> None:
+    def on_one_click(self, e) -> None:
         """Once an element from the TreeTable is clicked the function will populate the information
         on the next field and dropdown-menu
 
         :param e: Needed for the Treetable function binding
         :type e: object
         """
-        cat = self.getCategoryDto()
-        self.setText(cat.id,self.view.idTextField)
-        self.setText(cat.name,self.view.nameTextField)
-        self.setText(cat.description,self.view.descTextField)
-        self.setText(cat.active,self.view.activeTextField)
+        cat = self.get_category_dto()
+        self.set_text(cat.id, self.view.id_text_field)
+        self.set_text(cat.name, self.view.name_text_field)
+        self.set_text(cat.description, self.view.desc_text_field)
+        self.set_text(cat.active, self.view.active_text_field)
 
-    def setText(self, text: str, e)->None:
+    def set_text(self, text: str, e) -> None:
         """Set text for TKinter elements
 
         :param text: Desired text
@@ -108,10 +117,10 @@ class CategoryCtl:
         st.set(text)
         e.config(textvariable=st)
 
-    def clearAll(self) -> None:
+    def clear_all(self) -> None:
         """Set elements to default values after an action (insert, update, delete) has been performed.
         """
-        self.setText("",self.view.idTextField)
-        self.setText("",self.view.nameTextField)
-        self.setText("",self.view.descTextField)
-        self.setText("",self.view.activeTextField)
+        self.set_text("", self.view.id_text_field)
+        self.set_text("", self.view.name_text_field)
+        self.set_text("", self.view.desc_text_field)
+        self.set_text("", self.view.active_text_field)
