@@ -25,6 +25,7 @@ class RoomCtl:
         self.room_dao = RoomDAO(cx)
         # Needed to bring the list of categories for the dropdownmenu
         self.cat_dao = CategoryDAO(cx)
+
         self.get_all_rooms()
 
         # Button actions
@@ -32,7 +33,7 @@ class RoomCtl:
         self.view.update_btn.config(command=self.update)
         self.view.delete_btn.config(command=self.delete)
 
-        # Click Actions
+        # Click Actions on the treeTable
         self.view.tree_table.bind("<ButtonRelease-1>", self.on_one_click)
 
     def get_all_rooms(self) -> None:
@@ -43,7 +44,8 @@ class RoomCtl:
         self.refresh_tree_table(rooms)
 
     def add(self) -> None:
-
+        """Create a new entry in the database with a Room
+        """
         addr = self.view.addr_text_field.get()
         desc = self.view.desc_text_field.get()
         size = self.view.size_text_field.get()
@@ -81,6 +83,8 @@ class RoomCtl:
         self.clear_all()
 
     def delete(self) -> None:
+        """Soft delete a room in the database
+        """
         room_id = self.view.id_text_field.get()
         self.room_dao.delete_room(room_id)
         self.get_all_rooms()
@@ -136,7 +140,7 @@ class RoomCtl:
     def set_options(self) -> None:
         """Generate and set the items for the Combobox (dropdown-menu)
         """
-        categories = self.cat_dao.selectAllCategories()
+        categories = self.cat_dao.select_all_categories()
         names = [i.name for i in categories]  # List comprehension
         self.view.options = names
         self.view.cat_dropdown.config(values=self.view.options)
