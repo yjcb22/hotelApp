@@ -67,7 +67,7 @@ CREATE TABLE `Guests` (
   `password` varchar(255) NOT NULL,
   `active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id_guest`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,7 +76,7 @@ CREATE TABLE `Guests` (
 
 LOCK TABLES `Guests` WRITE;
 /*!40000 ALTER TABLE `Guests` DISABLE KEYS */;
-INSERT INTO `Guests` VALUES (1,'name1','lastname1',21,'email1@test1.com','password1',1),(2,'name2','lastname2',22,'email2@test2.com','password2',1),(3,'name3','lastname3',23,'email3@test3.com','password3',1),(4,'name4','lastname4',24,'email4@test4.com','password4',1),(5,'name5','lastname5',25,'email5@test5.com','password5',1);
+INSERT INTO `Guests` VALUES (1,'name1','lastname1',21,'email1@test1.com','password1',1),(2,'name2','lastname2',22,'email2@test2.com','password2',1),(3,'name3','lastname3',23,'email3@test3.com','password3',1),(4,'name4','lastname4',24,'email4@test4.com','password4',1),(5,'name5','lastname5',25,'email5@test5.com','test',1),(6,'name6','lastname6',32,'email6@test6.com','test6',1);
 /*!40000 ALTER TABLE `Guests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,10 +89,10 @@ DROP TABLE IF EXISTS `Reservations`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Reservations` (
   `id_reservation` int NOT NULL AUTO_INCREMENT,
-  `start_date` datetime NOT NULL,
-  `devolution_date` datetime NOT NULL,
-  `score` int DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `devolution_date` date DEFAULT NULL,
+  `score` enum('1','2','3','4','5') NOT NULL DEFAULT '5',
+  `status` enum('completed','pending','canceled') NOT NULL,
   `active` tinyint(1) DEFAULT '1',
   `id_room` int DEFAULT NULL,
   `id_guest` int DEFAULT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE `Reservations` (
   KEY `fk_reservations_guests_idx` (`id_guest`),
   CONSTRAINT `fk_reservations_guests` FOREIGN KEY (`id_guest`) REFERENCES `Guests` (`id_guest`),
   CONSTRAINT `fk_reservations_rooms` FOREIGN KEY (`id_room`) REFERENCES `Rooms` (`id_room`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -110,7 +110,7 @@ CREATE TABLE `Reservations` (
 
 LOCK TABLES `Reservations` WRITE;
 /*!40000 ALTER TABLE `Reservations` DISABLE KEYS */;
-INSERT INTO `Reservations` VALUES (1,'2025-01-02 11:00:00','2025-01-12 12:00:00',NULL,'completed',1,1,1),(2,'2025-02-10 11:00:00','2025-02-20 12:00:00',NULL,'completed',1,6,1),(3,'2025-03-20 11:00:00','2025-03-23 12:00:00',NULL,'pending',1,5,2),(4,'2025-04-10 11:00:00','2025-04-20 12:00:00',NULL,'cancelled',1,2,3),(5,'2025-07-10 11:00:00','2025-07-20 12:00:00',NULL,'pending',1,2,4),(6,'2025-07-15 11:00:00','2025-07-20 12:00:00',NULL,'pending',1,3,1),(7,'2025-07-10 11:00:00','2025-07-20 12:00:00',NULL,'pending',1,4,5),(8,'2025-08-22 11:00:00','2025-08-25 12:00:00',NULL,'cancelled',1,6,1),(9,'2025-09-10 11:00:00','2025-09-20 12:00:00',NULL,'cancelled',1,4,3),(10,'2025-09-27 11:00:00','2025-09-28 12:00:00',NULL,'cancelled',1,5,2),(11,'2026-09-27 11:00:00','2025-09-28 12:00:00',NULL,'cancelled',1,5,2);
+INSERT INTO `Reservations` VALUES (1,'2022-09-04','2022-09-10','1','completed',0,1,1),(2,'2024-01-01','2025-02-20','5','completed',1,6,1),(3,'2024-01-01','2025-03-23','5','pending',0,5,2),(4,'2024-01-01','2025-04-20','5','canceled',0,2,3),(5,'2024-01-01','2025-07-20','1','completed',1,1,1),(6,'2024-01-01','2025-07-20','5','pending',1,3,1),(7,'2024-01-01','2025-07-20','5','pending',1,4,5),(8,'2024-01-01','2025-08-25','4','canceled',1,6,1),(9,'2024-01-01','2025-09-20','5','canceled',0,4,3),(10,'2024-01-01','2025-09-28','5','canceled',0,5,2),(11,'2024-01-01','2025-09-28','5','canceled',0,5,2),(12,'2022-09-16','2022-09-23','1','pending',0,7,6);
 /*!40000 ALTER TABLE `Reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,7 +132,7 @@ CREATE TABLE `Rooms` (
   PRIMARY KEY (`id_room`),
   KEY `fk_rooms_categories_idx` (`id_category`),
   CONSTRAINT `fk_rooms_categories` FOREIGN KEY (`id_category`) REFERENCES `Categories` (`id_category`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +141,7 @@ CREATE TABLE `Rooms` (
 
 LOCK TABLES `Rooms` WRITE;
 /*!40000 ALTER TABLE `Rooms` DISABLE KEYS */;
-INSERT INTO `Rooms` VALUES (1,'111 - Building 1 Floor 1 Room 1','Great value and good location',89,'Happy pocket',1,1),(2,'121 - Building 1 Floor 2 Room 1','Great value and better view',89,'Less Happy pocket',1,1),(3,'211 - Building 2 Floor 1 Room 1','Enjoy a lot',120,'Happy Family',1,2),(4,'221 - Building 2 Floor 2 Room 1','Enjoy a lot with better view',120,'Happy Family and view',1,2),(5,'311 - Building 3 Floor 1 Room 1','Luxury and relax',180,'Making Family',1,3),(6,'321 - Building 3 Floor 2 Room 1','Luxury, relax and view',180,'Making Starry Family',0,3);
+INSERT INTO `Rooms` VALUES (1,'111 - Building 1 Floor 1 Room 1','Great value and good location',89,'Happy pocket',1,1),(2,'121 - Building 1 Floor 2 Room 1','Great value and better view',89,'Less Happy pocket',1,1),(3,'211 - Building 2 Floor 1 Room 1','Enjoy a lot',120,'Happy Family',1,2),(4,'221 - Building 2 Floor 2 Room 1','Enjoy a lot with better view',120,'Happy Family and view',1,2),(5,'311 - Building 3 Floor 1 Room 1','Luxury and relax',180,'Making Family',1,3),(6,'321 - Building 3 Floor 2 Room 1','Luxury, relax and view',180,'Making Starry Family',1,3),(7,'411 - Building 4 Floor 4 Room 1','More luxury',140,'More family',1,6);
 /*!40000 ALTER TABLE `Rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -154,4 +154,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-24 10:46:40
+-- Dump completed on 2022-09-07  6:24:54
